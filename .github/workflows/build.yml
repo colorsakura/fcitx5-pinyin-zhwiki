@@ -1,0 +1,46 @@
+name: Build Latest Dictionary Files
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+    
+    - name: Prepare Environment
+      run: |
+          pip3 install -r requirements.txt
+          sudo apt install libime-bin
+    
+    - name: Build
+      run: make zhwiki.dict zhwiki.dict.yaml
+
+    - name: Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: zhwiki
+        path: zhwiki.dict.yaml
+
+    - name: Extract tag name
+      id: tag
+      run: |
+          version_line=$(cat Makefile | grep 'VERSION=' -m 1)
+          web_slang_version_line=$(cat Makefile | grep 'WEB_SLANG_VERSION=' -m 1)
+          echo "::set-output name=result::${version_line#VERSION=}+${web_slang_version_line#WEB_SLANG_VERSION=}"
+
+    - name: Release
+      uses: ncipollo/release-action@v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        artifacts: "zhwiki.dict,zhwiki.dict.yaml"
+        bodyFile: "CHANGELOG.md"
+        commit: ${{ github.sha }}
+        tag: ${{ steps.tag.outputs.result }}
+        allowUpdates: true
