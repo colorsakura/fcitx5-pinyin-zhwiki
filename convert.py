@@ -11,8 +11,8 @@ import sys
 import opencc
 from pypinyin import lazy_pinyin
 
-# Require at least 2 characters
-_MINIMUM_LEN = 2
+# Require at least 3 characters
+_MINIMUM_LEN = 3
 _LIST_PAGE_ENDINGS = [
     '列表',
     '对照表',
