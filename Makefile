@@ -1,4 +1,4 @@
-VERSION=20240220
+VERSION=20240620
 WEB_SLANG_VERSION=$(VERSION)
 FILENAME=zhwiki-$(VERSION)-all-titles-in-ns0
 WEB_SLANG_FILE=web-slang-$(WEB_SLANG_VERSION).txt
@@ -48,4 +48,6 @@ install_rime_dict: zhwiki.dict.yaml
 	install -Dm644 zhwiki.dict.yaml -t $(DESTDIR)/usr/share/rime-data/
 
 clean:
-	rm -f $(FILENAME) zhwiki.{source,raw,raw.tmp,dict,dict.yaml,rime.raw} web-slang.source
+	rm -rf $(FILENAME){,.gz}
+	rm -rf web-slang-$(VERSION).{source,txt}
+	rm -rf zhwiki.{source,raw,raw.tmp,dict,dict.yaml,rime.raw}
