@@ -1,43 +1,46 @@
 name: Build
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
+  schedule:
+    - cron: "0 0 5,25 * *"
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: true
-    
-    - name: Prepare Environment
-      run: |
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Prepare Environment
+        run: |
           pip3 install -r requirements.txt
-    
-    - name: Build
-      run: make zhwiki.dict.yaml
 
-    - name: Artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: zhwiki
-        path: zhwiki.dict.yaml
+      - name: Build
+        run: make zhwiki.dict.yaml
 
-    - name: Extract tag name
-      id: tag
-      run: |
+      - name: Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: zhwiki
+          path: zhwiki.dict.yaml
+
+      - name: Extract tag name
+        id: tag
+        run: |
           echo "::set-output name=result::release"
 
-    - name: Release
-      uses: ncipollo/release-action@v1
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        artifacts: "zhwiki.dict.yaml"
-        bodyFile: "CHANGELOG.md"
-        commit: ${{ github.sha }}
-        tag: ${{ steps.tag.outputs.result }}
-        allowUpdates: true
+      - name: Release
+        uses: ncipollo/release-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          artifacts: "zhwiki.dict.yaml"
+          bodyFile: "CHANGELOG.md"
+          commit: ${{ github.sha }}
+          tag: ${{ steps.tag.outputs.result }}
+          allowUpdates: true
