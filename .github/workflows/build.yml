@@ -1,4 +1,4 @@
-name: Build Latest Dictionary Files
+name: Build
 
 on:
   push:
@@ -7,20 +7,19 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: true
     
     - name: Prepare Environment
       run: |
           pip3 install -r requirements.txt
-          sudo apt install libime-bin
     
     - name: Build
-      run: make zhwiki.dict zhwiki.dict.yaml
+      run: make zhwiki.dict.yaml
 
     - name: Artifact
       uses: actions/upload-artifact@v3
@@ -31,14 +30,13 @@ jobs:
     - name: Extract tag name
       id: tag
       run: |
-          version_line=$(cat Makefile | grep 'VERSION=' -m 1)
-          echo "::set-output name=result::${version_line#VERSION=}"
+          echo "::set-output name=result::release"
 
     - name: Release
       uses: ncipollo/release-action@v1
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        artifacts: "zhwiki.dict,zhwiki.dict.yaml"
+        artifacts: "zhwiki.dict.yaml"
         bodyFile: "CHANGELOG.md"
         commit: ${{ github.sha }}
         tag: ${{ steps.tag.outputs.result }}
