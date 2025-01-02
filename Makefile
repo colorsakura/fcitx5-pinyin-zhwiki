@@ -1,4 +1,5 @@
-VERSION=20240620
+# 只有每月的01和20日归档
+VERSION=20250101
 WEB_SLANG_VERSION=$(VERSION)
 FILENAME=zhwiki-$(VERSION)-all-titles-in-ns0
 WEB_SLANG_FILE=web-slang-$(WEB_SLANG_VERSION).txt
@@ -35,11 +36,11 @@ zhwiki.dict: zhwiki.raw
 	libime_pinyindict zhwiki.raw zhwiki.dict
 
 zhwiki.dict.yaml: zhwiki.raw
-	sed 's/[ ][ ]*/\t/g' zhwiki.raw > zhwiki.rime.raw
-	sed -i 's/\t0//g' zhwiki.rime.raw
-	sed -i "s/'/ /g" zhwiki.rime.raw
+	sed 's/[ ][ ]*/\t/g' zhwiki.raw > zhwiki.rhyme.raw
+	sed -i 's/\t0//g' zhwiki.rhyme.raw
+	sed -i "s/'/ /g" zhwiki.rhyme.raw
 	echo -e '---\nname: zhwiki\nversion: "0.1"\nsort: by_weight\n...\n' > zhwiki.dict.yaml
-	cat zhwiki.rime.raw >> zhwiki.dict.yaml
+	cat zhwiki.rhyme.raw >> zhwiki.dict.yaml
 
 install: zhwiki.dict
 	install -Dm644 zhwiki.dict -t $(DESTDIR)/usr/share/fcitx5/pinyin/dictionaries/
@@ -50,4 +51,4 @@ install_rime_dict: zhwiki.dict.yaml
 clean:
 	rm -rf $(FILENAME){,.gz}
 	rm -rf web-slang-$(VERSION).{source,txt}
-	rm -rf zhwiki.{source,raw,raw.tmp,dict,dict.yaml,rime.raw}
+	rm -rf zhwiki.{source,raw,raw.tmp,dict,dict.yaml,rhyme.raw}
